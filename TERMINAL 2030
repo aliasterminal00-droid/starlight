@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVVEX Terminal</title>
+    <style>
+        body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #auth-screen { text-align: center; }
+        input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; text-align: center; border-radius: 5px; }
+        #main-terminal { display: none; text-align: center; width: 90%; }
+        .mic-btn { width: 150px; height: 150px; border-radius: 50%; border: none; background: radial-gradient(circle, #222, #000); box-shadow: 0 0 20px #333; cursor: pointer; transition: 0.3s; }
+        .mic-btn:active { transform: scale(0.95); box-shadow: 0 0 40px #fff; }
+        .status { margin-top: 20px; font-size: 0.8rem; color: #666; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <p>INGRESE CÓDIGO DE ACCESO</p>
+        <input type="password" id="pass" oninput="checkPass()">
+    </div>
+
+    <div id="main-terminal">
+        <button class="mic-btn" id="start-btn"></button>
+        <div class="status" id="status-text">NVVEX STUDIOS // ESPERA</div>
+    </div>
+
+    <script>
+        const CLAVE_MAESTRA = "PON_AQUI_TU_CLAVE"; // <--- CAMBIA ESTO
+
+        function checkPass() {
+            const pass = document.getElementById('pass').value;
+            if (pass === CLAVE_MAESTRA) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-terminal').style.display = 'block';
+            }
+        }
+
+        // Configuración de Voz básica
+        const btn = document.getElementById('start-btn');
+        const statusText = document.getElementById('status-text');
+
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.continuous = false;
+
+            btn.onclick = () => {
+                recognition.start();
+                statusText.innerText = "ESCUCHANDO...";
+                btn.style.boxShadow = "0 0 50px #fff";
+            };
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                statusText.innerText = "PROCESANDO: " + text.toUpperCase();
+                // Aquí es donde luego conectaremos tu API Key
+                console.log("Comando recibido:", text);
+                setTimeout(() => {
+                    statusText.innerText = "NVVEX STUDIOS // LISTO";
+                    btn.style.boxShadow = "0 0 20px #333";
+                }, 2000);
+            };
+        } else {
+            statusText.innerText = "SISTEMA NO COMPATIBLE";
+        }
+    </script>
+</body>
+</html>
