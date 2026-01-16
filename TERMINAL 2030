@@ -3,119 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX TERMINAL 2026</title>
+    <title>NVVEX Terminal Privada</title>
     <style>
-        /* Estética de Supercomputadora / Búnker */
         body { 
-            background-color: #000; 
-            color: #00FF41; 
-            font-family: 'Courier New', monospace; 
+            background: #0a0a0a; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             display: flex; 
-            flex-direction: column;
+            flex-direction: column; 
             align-items: center; 
             justify-content: center; 
             height: 100vh; 
-            margin: 0;
-            text-shadow: 0 0 5px #00FF41;
-        }
-
-        #auth-screen { 
-            text-align: center; 
-            border: 1px solid #00FF41; 
-            padding: 50px; 
-            background: rgba(0, 20, 0, 0.2);
-            box-shadow: 0 0 20px #004411;
+            margin: 0; 
         }
         
-        input { 
-            background: #000; 
-            border: 1px solid #00FF41; 
-            color: #00FF41; 
-            padding: 10px; 
+        #content { 
+            display: none; 
             text-align: center; 
-            font-size: 1.5rem;
-            width: 150px;
-            margin-top: 20px;
-            outline: none;
         }
 
-        #main-terminal { display: none; text-align: center; }
-
-        /* El Radar de Voz */
-        .radar-circle {
-            width: 200px;
-            height: 200px;
+        .voice-btn {
+            width: 140px;
+            height: 140px;
+            background: #ffffff;
             border-radius: 50%;
-            border: 2px solid #00FF41;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: none;
             cursor: pointer;
-            position: relative;
-            background: radial-gradient(circle, #001100, #000);
-            box-shadow: 0 0 15px #00FF41;
+            box-shadow: 0 0 30px rgba(255,255,255,0.1);
+            transition: transform 0.2s;
         }
 
-        .radar-circle:active { transform: scale(0.95); box-shadow: 0 0 40px #00FF41; }
+        .voice-btn:active { 
+            transform: scale(0.9); 
+            background: #dddddd;
+        }
 
-        .status-msg {
+        #status {
             margin-top: 40px;
-            font-size: 0.8rem;
-            letter-spacing: 5px;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: #888;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
-        <div style="font-size: 0.6rem; opacity: 0.5;">NVVEX SYSTEM ACCESS</div>
-        <p>INTRODUZCA PIN</p>
-        <input type="password" id="pass" oninput="checkPass()" maxlength="4">
-    </div>
-
-    <div id="main-terminal">
-        <div class="radar-circle" id="start-btn">
-            <span style="font-size: 0.7rem;">VOZ</span>
-        </div>
-        <div class="status-msg" id="status-text">ESPERANDO ORDEN...</div>
+    <div id="content">
+        <button class="voice-btn" id="mic-btn"></button>
+        <div id="status" id="display-text">SISTEMA DE VOZ LISTO</div>
     </div>
 
     <script>
-        // TU CLAVE DE ACCESO
-        const CLAVE = "1234"; 
+        // ==========================================
+        // CONFIGURACIÓN DE SOCIO
+        // ==========================================
+        const PIN_ACCESO = "NVV04X"; // <--- CAMBIA TUS 4 NÚMEROS AQUÍ
 
-        function checkPass() {
-            const val = document.getElementById('pass').value;
-            if (val === CLAVE) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-terminal').style.display = 'block';
-            }
+        // Bloqueo inmediato
+        const login = prompt("ACCESO RESTRINGIDO - INGRESE PIN:");
+
+        if (login === PIN_ACCESO) {
+            document.getElementById('content').style.display = 'block';
+        } else {
+            alert("PIN INCORRECTO");
+            document.body.innerHTML = "<div style='color:red; font-size:12px;'>TERMINAL BLOQUEADA</div>";
         }
 
-        // Sistema de Reconocimiento
-        const btn = document.getElementById('start-btn');
-        const statusText = document.getElementById('status-text');
+        // Lógica de Voz
+        const btn = document.getElementById('mic-btn');
+        const statusText = document.getElementById('status');
 
         if ('webkitSpeechRecognition' in window) {
             const recognition = new webkitSpeechRecognition();
             recognition.lang = 'es-ES';
+            recognition.continuous = false;
 
             btn.onclick = () => {
                 recognition.start();
                 statusText.innerText = "ESCUCHANDO...";
-                btn.style.boxShadow = "0 0 60px #fff";
+                btn.style.boxShadow = "0 0 50px rgba(255,255,255,0.5)";
             };
 
             recognition.onresult = (event) => {
-                const query = event.results[0][0].transcript;
-                statusText.innerText = "PROCESANDO: " + query.toUpperCase();
+                const transcript = event.results[0][0].transcript;
+                statusText.innerText = "CAPTADO: " + transcript.toUpperCase();
+                
+                // Aquí es donde vincularemos tu API más adelante
+                console.log("Comando enviado:", transcript);
+
                 setTimeout(() => {
-                    statusText.innerText = "SISTEMA LISTO";
-                    btn.style.boxShadow = "0 0 15px #00FF41";
+                    statusText.innerText = "SISTEMA DE VOZ LISTO";
+                    btn.style.boxShadow = "0 0 30px rgba(255,255,255,0.1)";
                 }, 3000);
             };
+
+            recognition.onerror = () => {
+                statusText.innerText = "ERROR DE MICROFONO";
+            };
         } else {
-            statusText.innerText = "ERROR: NAVEGADOR NO COMPATIBLE";
+            statusText.innerText = "NAVEGADOR NO COMPATIBLE";
         }
     </script>
 </body>
