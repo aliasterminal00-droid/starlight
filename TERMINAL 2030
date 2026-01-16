@@ -3,67 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVVEX Terminal</title>
+    <title>NVVEX TERMINAL 2026</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        #auth-screen { text-align: center; }
-        input { background: #111; border: 1px solid #333; color: #fff; padding: 10px; text-align: center; border-radius: 5px; }
-        #main-terminal { display: none; text-align: center; width: 90%; }
-        .mic-btn { width: 150px; height: 150px; border-radius: 50%; border: none; background: radial-gradient(circle, #222, #000); box-shadow: 0 0 20px #333; cursor: pointer; transition: 0.3s; }
-        .mic-btn:active { transform: scale(0.95); box-shadow: 0 0 40px #fff; }
-        .status { margin-top: 20px; font-size: 0.8rem; color: #666; letter-spacing: 2px; }
+        /* Estética de Supercomputadora / Búnker */
+        body { 
+            background-color: #000; 
+            color: #00FF41; 
+            font-family: 'Courier New', monospace; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0;
+            text-shadow: 0 0 5px #00FF41;
+        }
+
+        #auth-screen { 
+            text-align: center; 
+            border: 1px solid #00FF41; 
+            padding: 50px; 
+            background: rgba(0, 20, 0, 0.2);
+            box-shadow: 0 0 20px #004411;
+        }
+        
+        input { 
+            background: #000; 
+            border: 1px solid #00FF41; 
+            color: #00FF41; 
+            padding: 10px; 
+            text-align: center; 
+            font-size: 1.5rem;
+            width: 150px;
+            margin-top: 20px;
+            outline: none;
+        }
+
+        #main-terminal { display: none; text-align: center; }
+
+        /* El Radar de Voz */
+        .radar-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 2px solid #00FF41;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            background: radial-gradient(circle, #001100, #000);
+            box-shadow: 0 0 15px #00FF41;
+        }
+
+        .radar-circle:active { transform: scale(0.95); box-shadow: 0 0 40px #00FF41; }
+
+        .status-msg {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+        }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
-        <p>INGRESE CÓDIGO DE ACCESO</p>
-        <input type="password" id="pass" oninput="checkPass()">
+        <div style="font-size: 0.6rem; opacity: 0.5;">NVVEX SYSTEM ACCESS</div>
+        <p>INTRODUZCA PIN</p>
+        <input type="password" id="pass" oninput="checkPass()" maxlength="4">
     </div>
 
     <div id="main-terminal">
-        <button class="mic-btn" id="start-btn"></button>
-        <div class="status" id="status-text">NVVEX STUDIOS // ESPERA</div>
+        <div class="radar-circle" id="start-btn">
+            <span style="font-size: 0.7rem;">VOZ</span>
+        </div>
+        <div class="status-msg" id="status-text">ESPERANDO ORDEN...</div>
     </div>
 
     <script>
-        const CLAVE_MAESTRA = "PON_AQUI_TU_CLAVE"; // <--- CAMBIA ESTO
+        // TU CLAVE DE ACCESO
+        const CLAVE = "1234"; 
 
         function checkPass() {
-            const pass = document.getElementById('pass').value;
-            if (pass === CLAVE_MAESTRA) {
+            const val = document.getElementById('pass').value;
+            if (val === CLAVE) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-terminal').style.display = 'block';
             }
         }
 
-        // Configuración de Voz básica
+        // Sistema de Reconocimiento
         const btn = document.getElementById('start-btn');
         const statusText = document.getElementById('status-text');
 
         if ('webkitSpeechRecognition' in window) {
             const recognition = new webkitSpeechRecognition();
             recognition.lang = 'es-ES';
-            recognition.continuous = false;
 
             btn.onclick = () => {
                 recognition.start();
                 statusText.innerText = "ESCUCHANDO...";
-                btn.style.boxShadow = "0 0 50px #fff";
+                btn.style.boxShadow = "0 0 60px #fff";
             };
 
             recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript;
-                statusText.innerText = "PROCESANDO: " + text.toUpperCase();
-                // Aquí es donde luego conectaremos tu API Key
-                console.log("Comando recibido:", text);
+                const query = event.results[0][0].transcript;
+                statusText.innerText = "PROCESANDO: " + query.toUpperCase();
                 setTimeout(() => {
-                    statusText.innerText = "NVVEX STUDIOS // LISTO";
-                    btn.style.boxShadow = "0 0 20px #333";
-                }, 2000);
+                    statusText.innerText = "SISTEMA LISTO";
+                    btn.style.boxShadow = "0 0 15px #00FF41";
+                }, 3000);
             };
         } else {
-            statusText.innerText = "SISTEMA NO COMPATIBLE";
+            statusText.innerText = "ERROR: NAVEGADOR NO COMPATIBLE";
         }
     </script>
 </body>
